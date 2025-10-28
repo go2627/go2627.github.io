@@ -1,0 +1,581 @@
+<!-- 
+  INSTRUCCIONES:
+  1. Guarda este contenido en un archivo llamado "colonia_marte.html".
+  2. Haz doble clic en el archivo para abrirlo en tu navegador. 
+  
+  NOTA: Utiliza Tailwind CSS a través de CDN para el diseño moderno y minimalista.
+  A pesar de ser un recurso externo, la carga es instantánea y el archivo
+  funciona de manera completamente local.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE RING – Vida en Marte</title>
+    <!-- Carga de Tailwind CSS para estilos modernos y minimalistas -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuración de la fuente Inter y el fondo oscuro */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Gris muy oscuro, casi negro */
+        }
+        /* Estilos específicos para la barra de navegación y el contenido */
+        .tab-button {
+            transition: all 0.2s;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            text-align: center;
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #2c313a; /* Un gris sutil al pasar el ratón */
+        }
+        .tab-button.active {
+            color: #fca311; /* Naranja/Ámbar de Marte */
+            border-bottom: 3px solid #fca311;
+            font-weight: 600;
+        }
+        .metric-value {
+            font-family: monospace;
+            font-weight: 800;
+        }
+        /* Color de acento rojo/naranja de Marte */
+        .mars-accent {
+            color: #fca311; 
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+
+    <!-- Encabezado y Navegación (Tabs) -->
+    <header class="bg-gray-800 shadow-lg sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto flex justify-between items-center p-4">
+            <h1 class="text-2xl font-bold mars-accent">CORE RING</h1>
+        </div>
+        
+        <!-- Barra de Pestañas -->
+        <nav id="tabs-container" class="max-w-4xl mx-auto flex justify-around border-t border-gray-700">
+            <div class="tab-button active w-full" data-tab="monitor">
+                <span class="text-xl">📊</span> Monitor
+            </div>
+            <div class="tab-button w-full" data-tab="aprende">
+                <span class="text-xl">📚</span> Aprende
+            </div>
+            <div class="tab-button w-full" data-tab="test">
+                <span class="text-xl">📝</span> Test
+            </div>
+            <div class="tab-button w-full" data-tab="camara">
+                <span class="text-xl">📷</span> Cámara
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow max-w-4xl mx-auto w-full p-4 md:p-8">
+        
+        <!-- 1. MONITOR - Datos en tiempo real simulados -->
+        <div id="monitor" class="tab-content">
+            <h2 class="text-3xl font-bold mb-6 text-center">Monitor del Módulo "Olympus"</h2>
+            <div id="monitor-metrics" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Las métricas se inyectarán aquí por JS -->
+            </div>
+            <p id="monitor-update-time" class="text-center text-sm mt-8 text-gray-500">Última actualización: --</p>
+        </div>
+
+        <!-- 2. APRENDE - Artículos educativos -->
+        <div id="aprende" class="tab-content hidden">
+            <div id="aprende-list-view">
+                <h2 class="text-3xl font-bold mb-6 text-center">Base de Conocimiento Marciano</h2>
+                <div id="articulos-container" class="space-y-4">
+                    <!-- Artículos se inyectarán aquí por JS -->
+                </div>
+            </div>
+            <div id="aprende-detail-view" class="hidden">
+                <button id="back-to-list" class="flex items-center text-gray-400 hover:text-white mb-4 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    Volver a Artículos
+                </button>
+                <h2 id="articulo-titulo" class="text-4xl font-extrabold mb-4 mars-accent"></h2>
+                <p id="articulo-icono" class="text-6xl mb-4"></p>
+                <div id="articulo-contenido" class="text-lg leading-relaxed text-gray-300 space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- 3. TEST - Cuestionario -->
+        <div id="test" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6 text-center">Test de Preparación Marciana</h2>
+            
+            <div id="quiz-intro" class="text-center space-y-4">
+                <p class="text-xl">Ponte a prueba con este breve cuestionario de 10 preguntas sobre la vida y la ciencia en Marte.</p>
+                <button id="start-quiz" class="bg-fca311 hover:bg-orange-600 text-gray-900 font-bold py-3 px-8 rounded-lg shadow-lg transition-colors">
+                    🚀 ¡Comenzar Test!
+                </button>
+            </div>
+
+            <div id="quiz-area" class="hidden max-w-xl mx-auto bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700">
+                <div id="quiz-question-container" class="space-y-6">
+                    <p class="text-sm text-gray-400">Pregunta <span id="current-question-index">1</span> de 10</p>
+                    <p id="quiz-question-text" class="text-2xl font-semibold"></p>
+                    <div id="quiz-options-container" class="space-y-3">
+                        <!-- Opciones se inyectarán aquí por JS -->
+                    </div>
+                </div>
+                <div id="quiz-feedback-container" class="mt-4 p-3 rounded-lg border hidden transition-all"></div>
+                
+                <div class="flex justify-between items-center mt-8">
+                    <button id="prev-question" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50" disabled>
+                        Anterior
+                    </button>
+                    <button id="next-question" class="bg-fca311 hover:bg-orange-600 text-gray-900 font-bold py-2 px-4 rounded-lg transition-colors disabled:opacity-50" disabled>
+                        Siguiente
+                    </button>
+                    <button id="submit-quiz" class="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg transition-colors hidden">
+                        Finalizar Test
+                    </button>
+                </div>
+            </div>
+
+            <div id="quiz-result" class="hidden text-center p-8 bg-gray-800 rounded-xl shadow-2xl mt-8">
+                <h3 class="text-4xl font-bold mb-4 mars-accent">Resultados del Test</h3>
+                <p class="text-xl mb-6">Tu puntuación final es:</p>
+                <p id="final-score" class="text-7xl font-extrabold text-green-400 mb-8"></p>
+                <p id="score-message" class="text-xl text-gray-300 mb-8"></p>
+                <button id="restart-quiz" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                    Reiniciar Test
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. CÁMARA - Vista estática de Marte -->
+        <div id="camara" class="tab-content hidden">
+            <h2 class="text-3xl font-bold mb-6 text-center">Cámara de Transmisión en Vivo (Superficie)</h2>
+            <div class="bg-gray-800 p-2 rounded-xl shadow-2xl">
+                <div class="relative w-full aspect-video overflow-hidden rounded-lg">
+                    <!-- Placeholder de imagen de Marte (URL pública para simular la imagen) -->
+                    <img src="https://placehold.co/800x450/b7410e/ffffff?text=MARTE+-+Transmisión+en+Vivo" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/800x450/333/fff?text=IMAGEN+NO+DISPONIBLE';"
+                         alt="Vista en vivo de la superficie de Marte" 
+                         class="w-full h-full object-cover rounded-lg border-4 border-fca311 shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
+                    <div class="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                        🔴 LIVE
+                    </div>
+                    <div class="absolute bottom-2 right-2 text-white text-sm font-light bg-black bg-opacity-50 p-1 rounded">
+                        COORD: 14.56°N, 175.47°E
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-gray-500 mt-4 text-sm">Transmisión nominal. Se requiere la limpieza programada del lente del módulo Rover.</p>
+        </div>
+
+    </main>
+    
+    <!-- Pie de Página (Para mantener la estética) -->
+    <footer class="bg-gray-800 text-gray-500 text-center p-4 text-sm mt-8">
+        CORE RING &copy; 2025 | Simulación de Colonia Marciana
+    </footer>
+
+    <!-- Script JavaScript para la lógica de la aplicación -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ===============================================
+            // I. DATA (Contenido educativo y preguntas del Test)
+            // ===============================================
+            const ARTICULOS_APRENDE = [
+                {
+                    id: 1,
+                    titulo: "La Delgada Atmósfera Marciana",
+                    icono: "💨",
+                    contenido: "La atmósfera de Marte es extremadamente delgada, con una presión superficial de solo 6.1 milibares (menos del 1% de la Tierra). Está compuesta principalmente por dióxido de carbono (95%). Esto requiere trajes presurizados y hábitats cerrados. El CO₂ es útil para cultivar plantas mediante el proceso de Sabatier para generar oxígeno y agua."
+                },
+                {
+                    id: 2,
+                    titulo: "El Agua Hielo Bajo la Superficie",
+                    icono: "💧",
+                    contenido: "Aunque Marte es un desierto frío, grandes cantidades de agua existen en forma de hielo en los casquetes polares y justo debajo de la superficie en muchas latitudes. Este hielo se puede extraer y purificar, siendo vital para beber, para los sistemas de soporte vital y para producir combustible de cohete (hidrógeno y oxígeno) para el viaje de regreso."
+                },
+                {
+                    id: 3,
+                    titulo: "Generación de Energía Autónoma",
+                    icono: "⚡",
+                    contenido: "La energía en una colonia marciana se genera primariamente a través de paneles solares fotovoltaicos, ya que la luz solar es abundante aunque con menor intensidad que en la Tierra. Los reactores de fisión nuclear compactos son la alternativa de alta potencia para bases permanentes, proporcionando calor y energía continua, especialmente durante las tormentas de polvo que bloquean el sol."
+                },
+                {
+                    id: 4,
+                    titulo: "Cultivo de Alimentos Hidropónicos",
+                    icono: "🥕",
+                    contenido: "Debido a la baja gravedad y la falta de un suelo orgánico viable (el regolito es tóxico por percloratos), los alimentos se cultivan en hábitats cerrados usando sistemas hidropónicos o aeropónicos. Estos sistemas reciclan agua y nutrientes, permitiendo cultivar verduras de hoja verde y otros vegetales vitales para la dieta y el oxígeno de la tripulación."
+                },
+                {
+                    id: 5,
+                    titulo: "Protección Contra la Radiación",
+                    icono: "🛡️",
+                    contenido: "Marte carece de un campo magnético global fuerte y tiene una atmósfera muy delgada, lo que significa que la radiación espacial y solar impacta directamente en la superficie. Los hábitats deben construirse bajo tierra o cubrirse con una capa de regolito (suelo marciano) de varios metros de espesor para proporcionar el blindaje necesario para la salud a largo plazo de los colonos."
+                },
+                {
+                    id: 6,
+                    titulo: "Monitoreo de la Salud de la Tripulación",
+                    icono: "❤️",
+                    contenido: "El monitoreo constante de los signos vitales (BPM, presión, etc.) es crucial. La baja gravedad a largo plazo puede provocar pérdida de densidad ósea y muscular. Los colonos deben seguir un estricto régimen de ejercicios diarios y someterse a chequeos médicos automatizados para mitigar los efectos fisiológicos de la vida marciana."
+                },
+                {
+                    id: 7,
+                    titulo: "Comunicaciones de Larga Distancia",
+                    icono: "🛰️",
+                    contenido: "Debido a la distancia entre la Tierra y Marte, la comunicación no es instantánea. Hay un retraso variable que va de 3 a 22 minutos (solo ida). Esto significa que no es posible una conversación en tiempo real. Las operaciones deben ser diseñadas para ser lo más autónomas posible, y todas las comunicaciones son por paquetes de datos."
+                },
+                {
+                    id: 8,
+                    titulo: "El Futuro de la Terraformación",
+                    icono: "🌍",
+                    contenido: "La terraformación es un concepto a largo plazo que implica modificar el entorno de Marte para hacerlo más habitable para los humanos, posiblemente liberando gases de efecto invernadero para espesar la atmósfera y elevar la temperatura. Aunque es un objetivo aspiracional, las primeras colonias se centran en 'vivir bajo cúpulas' y utilizar recursos 'in situ'."
+                }
+            ];
+
+            const PREGUNTAS_TEST = [
+                {
+                    pregunta: "¿Cuál es el principal componente de la atmósfera de Marte?",
+                    opciones: ["Nitrógeno", "Oxígeno", "Dióxido de Carbono", "Argón"],
+                    respuestaCorrecta: "Dióxido de Carbono"
+                },
+                {
+                    pregunta: "¿Cuál es el fenómeno más grande conocido en el sistema solar, ubicado en Marte?",
+                    opciones: ["El Cañón Valles Marineris", "El Monte Olimpo", "El Polo Sur", "La Planicie Elysium"],
+                    respuestaCorrecta: "El Monte Olimpo"
+                },
+                {
+                    pregunta: "¿Qué técnica se utiliza para cultivar alimentos en el hábitat marciano?",
+                    opciones: ["Cultivo en Regolito Abierto", "Siembra Tradicional", "Hidroponía", "Jardinería Aérea"],
+                    respuestaCorrecta: "Hidroponía"
+                },
+                {
+                    pregunta: "¿Cuál es el rango de retraso de tiempo para una señal de radio unidireccional entre la Tierra y Marte?",
+                    opciones: ["Menos de 1 segundo", "1 a 3 minutos", "3 a 22 minutos", "Más de 1 hora"],
+                    respuestaCorrecta: "3 a 22 minutos"
+                },
+                {
+                    pregunta: "¿Cómo se protegen los hábitats de la radiación en Marte?",
+                    opciones: ["Generadores de campos magnéticos", "Escudos de aluminio ligero", "Capas gruesas de regolito (suelo)", "Vidrio templado y reforzado"],
+                    respuestaCorrecta: "Capas gruesas de regolito (suelo)"
+                },
+                {
+                    pregunta: "¿Qué elemento es fundamental extraer del hielo marciano para el viaje de regreso a la Tierra?",
+                    opciones: ["Metano", "Sulfuro de Calcio", "Hidrógeno (para combustible)", "Cloro"],
+                    respuestaCorrecta: "Hidrógeno (para combustible)"
+                },
+                {
+                    pregunta: "¿Qué color se asocia a menudo con el cielo de Marte durante el día?",
+                    opciones: ["Azul brillante", "Rojo intenso", "Rosa pálido", "Amarillo-marrón (Butterscotch)"],
+                    respuestaCorrecta: "Amarillo-marrón (Butterscotch)"
+                },
+                {
+                    pregunta: "¿Qué significa el acrónimo 'BPM' en el contexto de la tripulación en el Monitor?",
+                    opciones: ["Bytes por Milla", "Bombas por Minuto", "Batas de Protección Marciana", "Latidos por Minuto"],
+                    respuestaCorrecta: "Latidos por Minuto"
+                },
+                {
+                    pregunta: "¿Cuál es el objetivo final y a muy largo plazo de la modificación del medio ambiente marciano?",
+                    opciones: ["Desmilitarización", "Industrialización", "Terraformación", "Comercio Interplanetario"],
+                    respuestaCorrecta: "Terraformación"
+                },
+                {
+                    pregunta: "¿Qué tipo de energía se considera la mejor opción a largo plazo y alta potencia para una colonia permanente?",
+                    opciones: ["Energía Eólica", "Energía Solar Fotovoltaica", "Reactores de Fisión Nuclear", "Energía Geotérmica"],
+                    respuestaCorrecta: "Reactores de Fisión Nuclear"
+                }
+            ];
+
+            // ===============================================
+            // II. ESTADO GLOBAL Y SELECTORES
+            // ===============================================
+            const state = {
+                currentTab: 'monitor',
+                quiz: {
+                    index: 0,
+                    score: 0,
+                    answers: Array(PREGUNTAS_TEST.length).fill(null)
+                },
+                articuloDetalleId: null
+            };
+
+            const selectors = {
+                tabsContainer: document.getElementById('tabs-container'),
+                tabContents: {
+                    monitor: document.getElementById('monitor'),
+                    aprende: document.getElementById('aprende'),
+                    test: document.getElementById('test'),
+                    camara: document.getElementById('camara'),
+                },
+                monitorMetrics: document.getElementById('monitor-metrics'),
+                monitorUpdateTime: document.getElementById('monitor-update-time'),
+                
+                aprendeListView: document.getElementById('aprende-list-view'),
+                aprendeDetailView: document.getElementById('aprende-detail-view'),
+                articulosContainer: document.getElementById('articulos-container'),
+                backToListButton: document.getElementById('back-to-list'),
+                articuloTitulo: document.getElementById('articulo-titulo'),
+                articuloIcono: document.getElementById('articulo-icono'),
+                articuloContenido: document.getElementById('articulo-contenido'),
+
+                quizIntro: document.getElementById('quiz-intro'),
+                startQuizButton: document.getElementById('start-quiz'),
+                quizArea: document.getElementById('quiz-area'),
+                currentQuestionIndex: document.getElementById('current-question-index'),
+                quizQuestionText: document.getElementById('quiz-question-text'),
+                quizOptionsContainer: document.getElementById('quiz-options-container'),
+                quizFeedbackContainer: document.getElementById('quiz-feedback-container'),
+                prevQuestion: document.getElementById('prev-question'),
+                nextQuestion: document.getElementById('next-question'),
+                submitQuiz: document.getElementById('submit-quiz'),
+                quizResult: document.getElementById('quiz-result'),
+                finalScore: document.getElementById('final-score'),
+                scoreMessage: document.getElementById('score-message'),
+                restartQuiz: document.getElementById('restart-quiz'),
+            };
+
+
+            // ===============================================
+            // III. FUNCIONES DE UTILIDAD Y LÓGICA CENTRAL
+            // ===============================================
+            
+            // --- 1. Lógica de Tabs ---
+            function switchTab(tabId) {
+                // Ocultar todos los contenidos
+                Object.values(selectors.tabContents).forEach(el => el.classList.add('hidden'));
+                // Mostrar el contenido seleccionado
+                selectors.tabContents[tabId].classList.remove('hidden');
+                
+                // Actualizar botones de navegación
+                selectors.tabsContainer.querySelectorAll('.tab-button').forEach(button => {
+                    button.classList.remove('active');
+                    if (button.dataset.tab === tabId) {
+                        button.classList.add('active');
+                    }
+                });
+                
+                state.currentTab = tabId;
+                
+                // Lógica de inicialización específica de cada tab (si es necesario)
+                if (tabId === 'aprende') {
+                    renderAprendeList();
+                }
+            }
+            
+            // --- 2. Lógica del Monitor (Simulación) ---
+            function generarNumeroAleatorio(min, max, decimales = 0) {
+                const factor = Math.pow(10, decimales);
+                return (Math.round((Math.random() * (max - min) + min) * factor) / factor);
+            }
+
+            function simularDatosModulo() {
+                const temp = generarNumeroAleatorio(-65, -55, 1);
+                const pressure = generarNumeroAleatorio(600, 700); // Pa, 6.0 a 7.0 mbar
+                const wind = generarNumeroAleatorio(5, 15, 1);
+                const bpm = generarNumeroAleatorio(60, 90);
+                const mirrorStatus = Math.random() < 0.95 ? 'OK' : 'FAIL';
+                
+                // Determinar estado de color
+                const tempColor = temp > -60 ? 'text-orange-400' : 'text-green-400';
+                const pressureColor = pressure < 620 ? 'text-red-400' : 'text-green-400';
+                const windColor = wind > 12 ? 'text-yellow-400' : 'text-green-400';
+                const bpmColor = bpm > 85 || bpm < 65 ? 'text-red-400' : 'text-green-400';
+                const mirrorColor = mirrorStatus === 'OK' ? 'text-green-400' : 'text-red-400';
+
+                const data = [
+                    { label: "Temperatura Exterior", value: `${temp}°C`, color: tempColor, desc: "Rango óptimo: -65°C a -60°C" },
+                    { label: "Presión del Hábitat", value: `${pressure} Pa`, color: pressureColor, desc: "Rango óptimo: > 620 Pa (6.2 mbar)" },
+                    { label: "Velocidad del Viento", value: `${wind} km/h`, color: windColor, desc: "Rango óptimo: < 12 km/h" },
+                    { label: "BPM de la Tripulación", value: `${bpm} lpm`, color: bpmColor, desc: "Rango óptimo: 65 a 85 lpm" },
+                    { label: "Estado Espejos Solares", value: mirrorStatus, color: mirrorColor, desc: "Sistema de orientación de paneles." },
+                    { label: "Nivel de Oxígeno", value: `${generarNumeroAleatorio(20.5, 21.5, 2)}%`, color: 'text-green-400', desc: "Nivel de O₂ en la atmósfera del hábitat." },
+                ];
+
+                selectors.monitorMetrics.innerHTML = data.map(metric => `
+                    <div class="bg-gray-800 p-4 rounded-xl shadow-xl border border-gray-700">
+                        <p class="text-sm text-gray-400">${metric.label}</p>
+                        <p class="text-5xl metric-value ${metric.color} mt-1">${metric.value}</p>
+                        <p class="text-xs text-gray-500 mt-2">${metric.desc}</p>
+                    </div>
+                `).join('');
+
+                selectors.monitorUpdateTime.textContent = `Última actualización: ${new Date().toLocaleTimeString('es-ES')}`;
+            }
+
+            // --- 3. Lógica de Aprende ---
+            function renderAprendeList() {
+                // Asegurar que la vista de lista esté visible y el detalle oculto
+                selectors.aprendeListView.classList.remove('hidden');
+                selectors.aprendeDetailView.classList.add('hidden');
+                
+                selectors.articulosContainer.innerHTML = ARTICULOS_APRENDE.map(articulo => `
+                    <div class="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 hover:bg-gray-700 transition-colors cursor-pointer flex items-center" data-id="${articulo.id}">
+                        <span class="text-2xl mr-4">${articulo.icono}</span>
+                        <p class="text-lg font-semibold flex-grow">${articulo.titulo}</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-500"><path d="m9 18 6-6-6-6"/></svg>
+                    </div>
+                `).join('');
+            }
+            
+            function showArticuloDetail(id) {
+                const articulo = ARTICULOS_APRENDE.find(a => a.id === id);
+                if (!articulo) return;
+
+                selectors.aprendeListView.classList.add('hidden');
+                selectors.aprendeDetailView.classList.remove('hidden');
+
+                selectors.articuloTitulo.textContent = articulo.titulo;
+                selectors.articuloIcono.textContent = articulo.icono;
+                // Dividir contenido en párrafos para un mejor formato
+                selectors.articuloContenido.innerHTML = articulo.contenido.split('. ').map(p => p.trim()).filter(p => p.length > 0).map(p => `<p>${p}.</p>`).join('');
+            }
+            
+            // --- 4. Lógica del Test (Quiz) ---
+            function renderQuizQuestion() {
+                const { index, answers } = state.quiz;
+                const pregunta = PREGUNTAS_TEST[index];
+                
+                selectors.currentQuestionIndex.textContent = index + 1;
+                selectors.quizQuestionText.textContent = pregunta.pregunta;
+                selectors.quizOptionsContainer.innerHTML = pregunta.opciones.map((opcion, i) => {
+                    const isSelected = answers[index] === opcion;
+                    let optionClass = isSelected ? 'bg-fca311 text-gray-900 border-fca311' : 'bg-gray-700 text-gray-100 border-gray-600';
+                    return `
+                        <div class="quiz-option p-3 rounded-lg border cursor-pointer transition-colors ${optionClass}" data-opcion="${opcion}">
+                            ${opcion}
+                        </div>
+                    `;
+                }).join('');
+
+                // Mostrar feedback si ya se ha respondido (solo en modo revisión)
+                selectors.quizFeedbackContainer.classList.add('hidden');
+                
+                // Actualizar botones de navegación
+                selectors.prevQuestion.disabled = index === 0;
+                selectors.nextQuestion.disabled = answers[index] === null;
+                selectors.submitQuiz.classList.toggle('hidden', index < PREGUNTAS_TEST.length - 1);
+                selectors.nextQuestion.classList.toggle('hidden', index === PREGUNTAS_TEST.length - 1);
+            }
+
+            function selectOption(selectedOption) {
+                state.quiz.answers[state.quiz.index] = selectedOption;
+                renderQuizQuestion(); // Volver a renderizar para actualizar el estilo
+            }
+            
+            function nextQuestion() {
+                if (state.quiz.index < PREGUNTAS_TEST.length - 1) {
+                    state.quiz.index++;
+                    renderQuizQuestion();
+                }
+            }
+            
+            function prevQuestion() {
+                if (state.quiz.index > 0) {
+                    state.quiz.index--;
+                    renderQuizQuestion();
+                }
+            }
+
+            function calculateScore() {
+                let score = 0;
+                PREGUNTAS_TEST.forEach((q, i) => {
+                    if (state.quiz.answers[i] === q.respuestaCorrecta) {
+                        score++;
+                    }
+                });
+                state.quiz.score = score;
+                return score;
+            }
+
+            function submitQuiz() {
+                const score = calculateScore();
+                const total = PREGUNTAS_TEST.length;
+                
+                let message = '';
+                if (score === total) {
+                    message = '¡Felicidades! Eres un experto en Marte. ¡Estás listo para el viaje! 🥳';
+                    selectors.finalScore.classList.replace('text-green-400', 'text-yellow-400');
+                } else if (score >= total * 0.7) {
+                    message = 'Buen trabajo. Estás bien preparado, solo necesitas repasar algunos detalles clave. 👍';
+                    selectors.finalScore.classList.replace('text-yellow-400', 'text-green-400');
+                } else {
+                    message = 'Necesitas repasar la Base de Conocimiento. ¡Revisa los artículos en la pestaña Aprende! 🧐';
+                    selectors.finalScore.classList.replace('text-yellow-400', 'text-red-400');
+                }
+                
+                selectors.quizArea.classList.add('hidden');
+                selectors.quizResult.classList.remove('hidden');
+                selectors.finalScore.textContent = `${score}/${total}`;
+                selectors.scoreMessage.textContent = message;
+            }
+
+            function startQuiz() {
+                state.quiz.index = 0;
+                state.quiz.score = 0;
+                state.quiz.answers = Array(PREGUNTAS_TEST.length).fill(null);
+                
+                selectors.quizIntro.classList.add('hidden');
+                selectors.quizResult.classList.add('hidden');
+                selectors.quizArea.classList.remove('hidden');
+                
+                renderQuizQuestion();
+            }
+
+            // ===============================================
+            // IV. EVENT LISTENERS
+            // ===============================================
+
+            // --- Control de Tabs ---
+            selectors.tabsContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.tab-button');
+                if (button) {
+                    switchTab(button.dataset.tab);
+                }
+            });
+
+            // --- Control de Aprende ---
+            selectors.articulosContainer.addEventListener('click', (e) => {
+                const articleDiv = e.target.closest('[data-id]');
+                if (articleDiv) {
+                    showArticuloDetail(parseInt(articleDiv.dataset.id));
+                }
+            });
+
+            selectors.backToListButton.addEventListener('click', () => {
+                selectors.aprendeListView.classList.remove('hidden');
+                selectors.aprendeDetailView.classList.add('hidden');
+            });
+
+            // --- Control del Test ---
+            selectors.startQuizButton.addEventListener('click', startQuiz);
+            selectors.restartQuiz.addEventListener('click', startQuiz);
+            selectors.nextQuestion.addEventListener('click', nextQuestion);
+            selectors.prevQuestion.addEventListener('click', prevQuestion);
+            selectors.submitQuiz.addEventListener('click', submitQuiz);
+
+            selectors.quizOptionsContainer.addEventListener('click', (e) => {
+                const optionDiv = e.target.closest('.quiz-option');
+                if (optionDiv) {
+                    selectOption(optionDiv.dataset.opcion);
+                }
+            });
+
+
+            // ===============================================
+            // V. INICIALIZACIÓN
+            // ===============================================
+
+            // Iniciar la simulación del monitor inmediatamente
+            simularDatosModulo();
+            // Actualizar la simulación cada 3 segundos
+            setInterval(simularDatosModulo, 3000);
+            
+            // Renderizar la lista de artículos
+            renderAprendeList();
+
+            // Asegurar que la primera pestaña (Monitor) esté activa al inicio
+            switchTab(state.currentTab);
+        });
+    </script>
+</body>
+</html>
